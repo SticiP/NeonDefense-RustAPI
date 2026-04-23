@@ -1,5 +1,15 @@
+CREATE TABLE users (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    email VARCHAR(255) UNIQUE,
+    password_hash VARCHAR(255),
+    auth_provider VARCHAR(50) DEFAULT 'local',
+    is_deleted BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 CREATE TABLE players (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
     nickname VARCHAR(50) UNIQUE NOT NULL,
     coins BIGINT DEFAULT 100,
     crypto_cores INT DEFAULT 0,
