@@ -1,68 +1,41 @@
-use axum::{
-    routing::{get, post},
-    Json, Router,
-};
-use serde::{Deserialize, Serialize};
+mod handlers;
+mod models;
+
+use axum::{routing::{get, post}, Router};
 use std::net::SocketAddr;
 use tower_http::cors::CorsLayer;
-
-#[derive(Serialize)]
-struct HealthResponse {
-    status: String,
-    version: String,
-}
-
-#[derive(Deserialize)]
-struct GuestAuthRequest {
-    nickname: String,
-}
-
-#[derive(Serialize)]
-struct UserProfile {
-    nickname: String,
-    account_id: String,
-    coins: u32,
-    energy: u32,
-}
-
-#[derive(Serialize)]
-struct AuthResponse {
-    message: String,
-    token: String,
-    profile: UserProfile,
-}
-
-async fn health_check() -> Json<HealthResponse> {
-    Json(HealthResponse {
-        status: "online".to_string(),
-        version: "0.1.0".to_string(),
-    })
-}
-
-async fn guest_auth(Json(payload): Json<GuestAuthRequest>) -> Json<AuthResponse> {
-    let account_id = format!("USR_{}", 12345); // Aici vei genera un ID unic real
-    
-    let profile = UserProfile {
-        nickname: payload.nickname,
-        account_id: account_id.clone(),
-        coins: 500,
-        energy: 50,
-    };
-
-    Json(AuthResponse {
-        message: "Cont creat cu succes!".to_string(),
-        token: format!("fake_jwt_token_{}", account_id),
-        profile,
-    })
-}
+// Adăugăm tool-urile de la sqlx
+use sqlx::postgres::PgPoolOptions;
 
 #[tokio::main]
 async fn main() {
     tracing_subscriber::fmt::init();
 
+    // 1. Citim URL-ul bazei de date din mediul Docker (din docker-compose.yml)
+    let db_url = std::env::var("DATABASE_URL")
+        .expect("Variabila DATABASE_URL nu este setată!");
+
+    // 2. Creăm un Pool de conexiuni către baza de date
+    let pool = PgPoolOptions::new()
+        .max_connections(5)
+        .connect(&db_url)
+        .await
+        .expect("Nu m-am putut conecta la baza de date PostgreSQL!");
+
+    println!("[>>] Conectat la baza de date cu succes.");
+
+    // 3. MAGIA: Rulăm migrațiile din folderul /migrations automat!
+    sqlx::migrate!("./migrations")
+        .run(&pool)
+        .await
+        .expect("Eroare la rularea migrațiilor SQL!");
+
+    println!("[>>] Migrațiile au fost validate/executate.");
+
+    // 4. Setăm rutele
     let app = Router::new()
-        .route("/v1/health", get(health_check))
-        .route("/v1/auth/guest", post(guest_auth))
+        .route("/v1/health", get(handlers::health::health_check))
+        .route("/v1/auth/guest", post(handlers::auth::guest_auth))
         .layer(CorsLayer::permissive());
 
     let addr = SocketAddr::from(([0, 0, 0, 0], 3000));

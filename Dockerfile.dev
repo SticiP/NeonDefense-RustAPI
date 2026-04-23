@@ -1,0 +1,12 @@
+# Folosim mereu ultima versiune stabilă slim
+FROM rust:slim-bookworm
+
+# Instalăm dependențele necesare compilării
+RUN apt-get update && apt-get install -y build-essential pkg-config libssl-dev
+
+RUN cargo install cargo-watch
+
+WORKDIR /app
+
+# Rulăm live-reload
+CMD ["cargo", "watch", "-x", "run"]
