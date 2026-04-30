@@ -1,6 +1,5 @@
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use sqlx::types::Json; // Ajută la maparea JSONB-ului din Postgres
 use uuid::Uuid;
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -13,11 +12,14 @@ pub struct AnalyticsEvent {
 }
 
 impl AnalyticsEvent {
+
+    #[allow(dead_code)]
     pub fn new_match_completed(_player_id: Uuid, _duration: i32, _enemies_killed: i32) -> Self {
         // TODO: Constructor specializat care generează structura JSON direct aici
         unimplemented!()
     }
     
+    #[allow(dead_code)]
     pub fn new_purchase(_player_id: Uuid, _item_bought: &str, _cost: i64) -> Self {
         // TODO: Constructor pentru tranzacții în Shop
         unimplemented!()

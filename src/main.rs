@@ -1,5 +1,6 @@
 mod handlers;
 mod models;
+mod middlewares;
 
 use axum::{routing::{get, post}, Router};
 use sqlx::postgres::{PgPool, PgPoolOptions};

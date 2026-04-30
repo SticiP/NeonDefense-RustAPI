@@ -14,10 +14,13 @@ pub struct InventoryItem {
 }
 
 impl InventoryItem {
+
+    #[allow(dead_code)]
     pub fn equip(&mut self) {
         // TODO: Logica pentru a marca item-ul ca instalat pe AI
     }
 
+    #[allow(dead_code)]
     pub fn can_be_merged_with(&self, _other_item: &InventoryItem) -> bool {
         // TODO: Verifică dacă au același tip și raritate pentru sistemul N+1
         false

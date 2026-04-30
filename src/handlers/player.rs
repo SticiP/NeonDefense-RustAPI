@@ -1,33 +1,32 @@
 use axum::{extract::State, Json, http::StatusCode};
 use serde::Deserialize;
 use std::sync::Arc;
-use uuid::Uuid;
 use crate::AppState;
+use crate::models::auth::Claims; // Importăm Extractorul
 
 #[derive(Deserialize)]
 pub struct CreatePlayerPayload {
-    pub user_id: Uuid, // Într-o variantă finală, asta vine din decodarea JWT-ului
+    // AM ELIMINAT user_id! Clientul nu mai poate trimite ce ID vrea el.
     pub nickname: String,
 }
 
 // --- RUTA 3: CREATE PLAYER (Setare Nickname) ---
 pub async fn create_profile(
     State(state): State<Arc<AppState>>,
+    claims: Claims, // AXUM extrage automat datele din JWT aici! Dacă JWT-ul lipsește sau e invalid, ruta dă respingere automat.
     Json(payload): Json<CreatePlayerPayload>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, String)> {
     
-    // Inserăm player-ul conform schemei din baza de date
-    // (Resursele default precum coins=100 sunt puse automat de PostgreSQL)
     let player = sqlx::query!(
         "INSERT INTO players (user_id, nickname) VALUES ($1, $2) RETURNING id, nickname, coins, energy",
-        payload.user_id,
+        claims.sub, // Folosim 100% sigur ID-ul extras din token-ul validat criptografic
         payload.nickname
     )
     .fetch_one(&state.db)
     .await
     .map_err(|_| (StatusCode::CONFLICT, "Acest nickname este deja luat!".to_string()))?;
 
-    // Returnăm direct datele jucătorului create
+    // ... Restul funcției rămâne la fel
     Ok(Json(serde_json::json!({
         "message": "Profil creat cu succes. Bun venit în NeonDefense!",
         "player": {

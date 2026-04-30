@@ -13,13 +13,11 @@ pub struct User {
 }
 
 impl User {
-    // Aici vom adăuga logica pentru a valida parolele sau a iniția procesul de ștergere GDPR
+    #[allow(dead_code)]
     pub fn verify_password(&self, _input_password: &str) -> bool {
-        // TODO: Logica cu Argon2 pentru verificarea parolei
         false
     }
 
-    pub fn mark_as_deleted(&mut self) {
-        // TODO: Logica pentru a anonimiza contul
-    }
+    #[allow(dead_code)]
+    pub fn mark_as_deleted(&mut self) {}
 }

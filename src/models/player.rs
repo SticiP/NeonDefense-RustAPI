@@ -18,15 +18,18 @@ pub struct Player {
 
 impl Player {
     // Funcții utilitare pentru economia jocului
+    #[allow(dead_code)]
     pub fn add_coins(&mut self, _amount: i64) {
         // TODO: Adaugă Data Fragments
     }
 
+    #[allow(dead_code)]
     pub fn deduct_energy(&mut self, _amount: i32) -> Result<(), String> {
         // TODO: Verifică dacă are suficientă energie pentru a porni un meci
         Ok(())
     }
 
+    #[allow(dead_code)]
     pub fn trigger_hard_reset(&mut self) {
         // TODO: Eliberează nickname-ul și resetează resursele
     }

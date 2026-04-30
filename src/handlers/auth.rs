@@ -1,5 +1,4 @@
 use axum::{extract::State, Json, http::StatusCode};
-use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use uuid::Uuid;
 use argon2::{
@@ -9,31 +8,13 @@ use argon2::{
 use jsonwebtoken::{encode, Header, EncodingKey};
 use crate::AppState;
 
-// Payload-uri așteptate de la Unity
-#[derive(Deserialize)]
-pub struct AuthPayload {
-    pub email: String,
-    pub password: String,
-}
-
-#[derive(Serialize)]
-pub struct AuthResponse {
-    pub token: String,
-    pub user_id: Uuid,
-    pub message: String,
-}
-
-// Structură internă pentru a genera JWT
-#[derive(Serialize, Deserialize)]
-struct Claims {
-    sub: Uuid, // Subject (User ID)
-    exp: usize, // Expiration
-}
+// Importăm modelele corecte
+use crate::models::auth::{RegisterRequest, LoginRequest, AuthResponse, Claims};
 
 // --- RUTA 1: REGISTER ---
 pub async fn register(
     State(state): State<Arc<AppState>>,
-    Json(payload): Json<AuthPayload>,
+    Json(payload): Json<RegisterRequest>, // Folosim modelul oficial
 ) -> Result<Json<AuthResponse>, (StatusCode, String)> {
     
     // 1. Hashuim parola cu Argon2
@@ -66,10 +47,9 @@ pub async fn register(
 // --- RUTA 2: LOGIN ---
 pub async fn login(
     State(state): State<Arc<AppState>>,
-    Json(payload): Json<AuthPayload>,
+    Json(payload): Json<LoginRequest>, // <-- Modifică aici din AuthPayload în LoginRequest
 ) -> Result<Json<AuthResponse>, (StatusCode, String)> {
     
-    // 1. Căutăm user-ul după email
     let user = sqlx::query!(
         "SELECT id, password_hash FROM users WHERE email = $1 AND is_deleted = false",
         payload.email
