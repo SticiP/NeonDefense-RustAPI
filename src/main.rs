@@ -54,6 +54,7 @@ async fn main() {
         .route("/v1/auth/register", post(handlers::auth::register))
         .route("/v1/auth/login", post(handlers::auth::login))
         .route("/v1/player/create", post(handlers::player::create_profile))
+        .route("/v1/game/sync", post(handlers::game::sync_match))
         .layer(CorsLayer::permissive())
         .with_state(state); 
 

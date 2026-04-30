@@ -3,3 +3,4 @@ pub mod user;
 pub mod player;
 pub mod inventory;
 pub mod analytics_events;
+pub mod game;
