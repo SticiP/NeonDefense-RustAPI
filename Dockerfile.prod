@@ -1,0 +1,34 @@
+# ETAPA 1: Compilarea (Builder)
+# Folosim imaginea de Rust pentru a construi binarul
+FROM rust:slim-bookworm AS builder
+
+# Instalăm dependențele necesare compilării (ex: OpenSSL)
+RUN apt-get update && apt-get install -y build-essential pkg-config libssl-dev
+
+WORKDIR /app
+
+# Copiem tot codul sursă în container
+COPY . .
+
+ENV SQLX_OFFLINE=true
+
+# Compilăm proiectul în modul Release (cel mai rapid și optimizat)
+RUN cargo build --release
+
+# ---------------------------------------------------
+
+# ETAPA 2: Runtime (Imaginea finală)
+# Folosim o imagine extrem de ușoară de Debian, fără uneltele de compilare Rust
+FROM debian:bookworm-slim
+
+# Instalăm doar certificatele SSL și librăriile necesare pentru conexiuni externe / baza de date
+RUN apt-get update && apt-get install -y libssl3 ca-certificates && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Copiem DOAR binarul compilat din etapa 1
+# ATENȚIE: Înlocuiește "neon_api" cu numele exact din fisierul tău Cargo.toml (la [package] name="...")
+COPY --from=builder /app/target/release/neon-defense-api /usr/local/bin/neon-defense-api
+
+# Rulăm direct binarul
+CMD ["neon-defense-api"]

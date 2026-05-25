@@ -11,7 +11,7 @@ CREATE TABLE players (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID REFERENCES users(id) ON DELETE CASCADE,
     nickname VARCHAR(50) UNIQUE NOT NULL,
-    coins BIGINT DEFAULT 100,
+    data_fragments BIGINT DEFAULT 100,
     crypto_cores INT DEFAULT 0,
     energy INT DEFAULT 20,
     is_shadowbanned BOOLEAN DEFAULT FALSE,

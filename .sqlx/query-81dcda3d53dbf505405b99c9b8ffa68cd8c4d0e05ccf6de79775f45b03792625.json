@@ -1,0 +1,41 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO players (user_id, nickname) VALUES ($1, $2) RETURNING id, nickname, data_fragments, energy",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "nickname",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 2,
+        "name": "data_fragments",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 3,
+        "name": "energy",
+        "type_info": "Int4"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Varchar"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      true,
+      true
+    ]
+  },
+  "hash": "81dcda3d53dbf505405b99c9b8ffa68cd8c4d0e05ccf6de79775f45b03792625"
+}

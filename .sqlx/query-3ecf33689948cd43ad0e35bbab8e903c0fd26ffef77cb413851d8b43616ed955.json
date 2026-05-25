@@ -1,0 +1,62 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT item_sku, display_name, rarity, price::FLOAT8 as price, currency, reward_type, reward_amount, stock FROM marketplace_items WHERE is_active = true",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "item_sku",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 1,
+        "name": "display_name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 2,
+        "name": "rarity",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 3,
+        "name": "price",
+        "type_info": "Float8"
+      },
+      {
+        "ordinal": 4,
+        "name": "currency",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 5,
+        "name": "reward_type",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 6,
+        "name": "reward_amount",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 7,
+        "name": "stock",
+        "type_info": "Int4"
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      false,
+      false,
+      true,
+      null,
+      true,
+      false,
+      false,
+      true
+    ]
+  },
+  "hash": "3ecf33689948cd43ad0e35bbab8e903c0fd26ffef77cb413851d8b43616ed955"
+}

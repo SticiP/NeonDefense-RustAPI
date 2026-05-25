@@ -5,8 +5,9 @@ mod middlewares;
 use axum::{routing::{get, post}, Router};
 use sqlx::postgres::{PgPool, PgPoolOptions};
 use std::net::SocketAddr;
-use tower_http::cors::CorsLayer;
+use tower_http::{cors::CorsLayer, trace::TraceLayer};
 use std::sync::Arc;
+use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt, EnvFilter};
 
 // Structura care va fi partajată între toate rutele
 pub struct AppState {
@@ -17,7 +18,17 @@ pub struct AppState {
 
 #[tokio::main]
 async fn main() {
-    tracing_subscriber::fmt::init();
+    let file_appender = tracing_appender::rolling::daily("/app/logs", "neon_api.log");
+    let (non_blocking, _guard) = tracing_appender::non_blocking(file_appender);
+
+    tracing_subscriber::registry()
+        // MAGIA: Arată logurile INFO globale, dar de la sqlx arată doar WARNING-urile, ignorând DEBUG-ul
+        .with(EnvFilter::new("info,sqlx=warn")) 
+        .with(tracing_subscriber::fmt::layer().with_writer(std::io::stdout))
+        .with(tracing_subscriber::fmt::layer().json().with_writer(non_blocking))
+        .init();
+
+    tracing::info!("Server Rust API inițializat cu succes!");
 
     // 1. Citim variabilele injectate de Docker
     let db_url = std::env::var("DATABASE_URL").expect("DATABASE_URL lipsă!");
@@ -54,8 +65,12 @@ async fn main() {
         .route("/v1/auth/register", post(handlers::auth::register))
         .route("/v1/auth/login", post(handlers::auth::login))
         .route("/v1/player/create", post(handlers::player::create_profile))
+        .route("/v1/player/profile", get(handlers::player::get_profile))
         .route("/v1/game/sync", post(handlers::game::sync_match))
+        .route("/v1/game/init", get(handlers::game::get_init_data))
+        .layer(axum::middleware::from_fn_with_state(state.clone(), middlewares::hmac_verify::verify_hmac))
         .layer(CorsLayer::permissive())
+        .layer(TraceLayer::new_for_http())
         .with_state(state); 
 
     // 6. Pornim serverul

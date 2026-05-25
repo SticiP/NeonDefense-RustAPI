@@ -1,0 +1,46 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT id, nickname, data_fragments, crypto_cores, energy FROM players WHERE user_id = $1 AND is_deleted = false",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "nickname",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 2,
+        "name": "data_fragments",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 3,
+        "name": "crypto_cores",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 4,
+        "name": "energy",
+        "type_info": "Int4"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      true,
+      true,
+      true
+    ]
+  },
+  "hash": "9ddfefa0093055fefb8d12f5a3e3927a1ec03bce05040bd823d0082d6e878b09"
+}

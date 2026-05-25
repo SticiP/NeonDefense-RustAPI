@@ -8,5 +8,7 @@ RUN cargo install cargo-watch
 
 WORKDIR /app
 
+ENV SQLX_OFFLINE=true
+
 # Rulăm live-reload
-CMD ["cargo", "watch", "-x", "run"]
+CMD ["cargo", "watch", "-i", "logs/*", "-x", "run"]

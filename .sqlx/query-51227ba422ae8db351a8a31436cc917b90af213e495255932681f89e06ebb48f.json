@@ -1,0 +1,43 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n        UPDATE players \n        SET data_fragments = data_fragments + $1, \n            crypto_cores = crypto_cores + $2,\n            energy = energy - $3, \n            updated_at = NOW() \n        WHERE user_id = $4 \n        RETURNING id, data_fragments, crypto_cores, energy\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "data_fragments",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 2,
+        "name": "crypto_cores",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 3,
+        "name": "energy",
+        "type_info": "Int4"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int8",
+        "Int4",
+        "Int4",
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      true,
+      true,
+      true
+    ]
+  },
+  "hash": "51227ba422ae8db351a8a31436cc917b90af213e495255932681f89e06ebb48f"
+}
